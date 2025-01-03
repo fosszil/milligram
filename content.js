@@ -1,17 +1,44 @@
-let reelCount = 0;
+// content.js
+let lastReelCount = 0;
+let lastProcessedReel = null;
 
-const target = document.querySelector(div[role="presentation"])
-const config = { attributes:true,childList:true,subtree:true};
-
-const callback = (mutationList,observer) => {
-    for (const mutation of mutationList) {
-        if(mutation.type == "childList"){
-            console.log("child list has been added or removed");
-        } else if (mutation.type == "attributes") {
-            console.log("Attributes have been changed");
-        }
+// Observer to detect new reels being loaded
+const observer = new MutationObserver(() => {
+  const reels = document.querySelectorAll('article[role="presentation"]');
+  if (reels.length > lastReelCount) {
+    const newReel = reels[reels.length - 1];
+    if (newReel !== lastProcessedReel) {
+      processNewReel(newReel);
+      lastProcessedReel = newReel;
+      lastReelCount = reels.length;
     }
-};
+  }
+});
 
-const observer = new MutationObserver(callback);
-observer.observe(target,config);
+function processNewReel(reelElement) {
+  const username = reelElement.querySelector('a.x1i10hfl')?.getAttribute('href')?.replace('/', '') || 'unknown';
+  const timestamp = new Date().toISOString();
+  
+  // Get current date as key for storage
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Store the reel information
+  chrome.storage.local.get([today], (result) => {
+    const dailyData = result[today] || { count: 0, reels: [] };
+    dailyData.count += 1;
+    dailyData.reels.push({
+      username,
+      timestamp
+    });
+    
+    chrome.storage.local.set({ [today]: dailyData });
+  });
+}
+
+// Start observing when on reels page
+if (window.location.pathname.includes('/reels')) {
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+}
