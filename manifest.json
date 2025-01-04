@@ -1,6 +1,6 @@
 {
   "name": "Reels Counter",
-  "description": "an extension to count the number of reels scrolled",
+  "description": "An extension to count the number of reels scrolled",
   "version": "1.0",
   "manifest_version": 3,
   "content_scripts": [
@@ -12,12 +12,19 @@
       ]
     }
   ],
-  "action":{
-    "default_popup":"popup.html",
-    "default_icon":"extension.png"
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "extension.png"
   },
   "permissions": [
-    "activeTab","webNavigation","scripting","storage","tabs","http://*/*","https://*/*"
+    "activeTab", 
+    "webNavigation", 
+    "scripting", 
+    "storage", 
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://instagram.com/*",
+    "https://youtube.com/*"
   ]
-
 }
