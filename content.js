@@ -29,4 +29,12 @@ setInterval(() => {
     previousUrl = currentUrl;
     countShorts();
   }
+  
 }, 1000); 
+
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "GET_SHORTS_COUNT") {
+    sendResponse({ count: shortsCount });
+  }
+});
