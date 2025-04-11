@@ -1,44 +1,32 @@
-// content.js
-let lastReelCount = 0;
-let lastProcessedReel = null;
+console.log("The shorts counter is running");
 
-// Observer to detect new reels being loaded
-const observer = new MutationObserver(() => {
-  const reels = document.querySelectorAll('article[role="presentation"]');
-  if (reels.length > lastReelCount) {
-    const newReel = reels[reels.length - 1];
-    if (newReel !== lastProcessedReel) {
-      processNewReel(newReel);
-      lastProcessedReel = newReel;
-      lastReelCount = reels.length;
-    }
+let shortsCount = 0;
+let shortsWatched = new Set();
+
+const isShorts = (url) => url.includes("/shorts");
+
+const countShorts = () => {
+  let currentUrl = window.location.href;
+
+  if (isShorts(currentUrl) && !shortsWatched.has(currentUrl)) {
+    shortsWatched.add(currentUrl); 
+    shortsCount++;
+    console.log("New short watched", currentUrl);
+    console.log("Total shorts watched:", shortsCount);
   }
-});
+};
 
-function processNewReel(reelElement) {
-  const username = reelElement.querySelector('a.x1i10hfl')?.getAttribute('href')?.replace('/', '') || 'unknown';
-  const timestamp = new Date().toISOString();
-  
-  // Get current date as key for storage
-  const today = new Date().toISOString().split('T')[0];
-  
-  // Store the reel information
-  chrome.storage.local.get([today], (result) => {
-    const dailyData = result[today] || { count: 0, reels: [] };
-    dailyData.count += 1;
-    dailyData.reels.push({
-      username,
-      timestamp
-    });
-    
-    chrome.storage.local.set({ [today]: dailyData });
-  });
-}
+countShorts();
 
-// Start observing when on reels page
-if (window.location.pathname.includes('/reels')) {
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-}
+window.addEventListener('popstate', countShorts);  // Detect history navigation changes
+window.addEventListener('hashchange', countShorts); // Detect changes in the URL fragment
+
+// Polling the URL periodically to detect changes
+let previousUrl = window.location.href;
+setInterval(() => {
+  let currentUrl = window.location.href;
+  if (currentUrl !== previousUrl) {
+    previousUrl = currentUrl;
+    countShorts();
+  }
+}, 1000); 

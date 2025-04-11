@@ -1,14 +1,14 @@
 {
   "name": "Reels Counter",
-  "description": "An extension to count the number of reels scrolled",
+  "description": "An extension to count the number of shorts/reels scrolled",
   "version": "1.0",
   "manifest_version": 3,
   "content_scripts": [
     {
       "js": ["content.js"],
       "matches": [
-        "https://instagram.com/reels/*",
-        "https://youtube.com/shorts/*"
+        "https://youtube.com/shorts/*",
+        "*://*.youtube.com/*"
       ]
     }
   ],
@@ -24,7 +24,6 @@
     "tabs"
   ],
   "host_permissions": [
-    "https://instagram.com/*",
-    "https://youtube.com/*"
+
   ]
 }
