@@ -1,7 +1,167 @@
+<!DOCTYPE html>
 <html>
-  <body>
-    <h1>Shorts Counter</h1>
-    <div id="counter">Loading...</div>
-    <script type="module" src="popup.js"></script>
-  </body>
+
+<head>
+  <title>YouTube Shorts Counter</title>
+  <style>
+    /* Basic Reset & YouTube Font */
+    body {
+      margin: 0;
+      font-family: "Roboto", Arial, sans-serif;
+      /* YouTube's primary font */
+      font-size: 14px;
+      width: 250px;
+      /* Typical popup width */
+      background-color: #f9f9f9;
+      /* YouTube's light background */
+      color: #0f0f0f;
+      /* YouTube's primary text color */
+      border: 1px solid #ddd;
+      /* Subtle border */
+      box-sizing: border-box;
+    }
+
+    /* Container for padding */
+    .container {
+      padding: 15px;
+    }
+
+    /* Header styling */
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      /* Separator line */
+      padding-bottom: 10px;
+    }
+
+    /* YouTube Logo/Icon (Simple SVG Play Button) */
+    .yt-icon {
+      width: 28px;
+      height: 20px;
+      margin-right: 10px;
+      fill: #FF0000;
+      /* YouTube Red */
+    }
+
+    /* Title Styling */
+    h1 {
+      font-size: 16px;
+      font-weight: 500;
+      /* Medium weight */
+      margin: 0;
+      color: #030303;
+      /* Slightly darker for headings */
+      line-height: 1.2;
+    }
+
+    /* Counter Display Area */
+    .counter-display {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    /* Counter Label */
+    .counter-label {
+      font-size: 13px;
+      color: #606060;
+      /* YouTube's secondary text color */
+      display: block;
+      /* Put label on its own line */
+      margin-bottom: 5px;
+    }
+
+    /* The actual counter number/text */
+    #counter {
+      font-size: 24px;
+      font-weight: bold;
+      color: #0f0f0f;
+      background-color: #eee;
+      /* Light grey background for emphasis */
+      padding: 8px 12px;
+      border-radius: 4px;
+      /* Slightly rounded corners */
+      display: inline-block;
+      /* Fit content width */
+      min-width: 50px;
+      /* Ensure it doesn't look too small when loading */
+      text-align: center;
+    }
+
+    /* Style for loading/error state */
+    #counter.loading,
+    #counter.error {
+      font-size: 14px;
+      /* Smaller font for text messages */
+      font-weight: normal;
+      color: #606060;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <!-- Simple YouTube Play Button SVG -->
+      <svg class="yt-icon" viewBox="0 0 28 20" preserveAspectRatio="xMidYMid meet" focusable="false">
+        <path
+          d="M27.5 5.4a3.5 3.5 0 00-2.5-2.5C22.5 2 14 2 14 2s-8.5 0-11 .9A3.5 3.5 0 00.5 5.4C0 7.8 0 10 0 10s0 2.2.5 4.6a3.5 3.5 0 002.5 2.5c2.5.9 11 .9 11 .9s8.5 0 11-.9a3.5 3.5 0 002.5-2.5C28 12.2 28 10 28 10s0-2.2-.5-4.6zM11.2 14V6l7 4-7 4z">
+        </path>
+      </svg>
+      <h1>Shorts Counter</h1>
+    </div>
+
+    <div class="counter-display">
+      <span class="counter-label">Shorts Watched on this Page:</span>
+      <!-- Add class 'loading' initially -->
+      <div id="counter" class="loading">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Load the script; type="module" might be needed depending on your JS -->
+  <script src="popup.js"></script>
+
+  <!-- Optional: Add JS to manage loading/error class -->
+  <script>
+    // Small script to handle removing the 'loading' class
+    // This assumes your popup.js will set the text content
+    // You might integrate this logic into popup.js instead
+    document.addEventListener('DOMContentLoaded', () => {
+      const counterElement = document.getElementById('counter');
+
+      // Use MutationObserver to detect when the text content changes
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          if (mutation.type === 'characterData' || mutation.type === 'childList') {
+            const text = counterElement.textContent.trim();
+            if (text !== 'Loading...' && text !== 'Could not get count.') {
+              counterElement.classList.remove('loading');
+              counterElement.classList.remove('error');
+            } else if (text === 'Could not get count.') {
+              counterElement.classList.remove('loading');
+              counterElement.classList.add('error');
+            } else {
+              counterElement.classList.remove('error');
+              counterElement.classList.add('loading');
+            }
+          }
+        });
+      });
+
+      // Start observing the counter element for changes in its children (text node)
+      observer.observe(counterElement, { childList: true, characterData: true, subtree: true });
+
+      // Initial state check
+      if (counterElement.textContent.trim() !== 'Loading...') {
+        counterElement.classList.remove('loading');
+        if (counterElement.textContent.trim() === 'Could not get count.') {
+          counterElement.classList.add('error');
+        }
+      }
+    });
+  </script>
+
+</body>
+
 </html>
