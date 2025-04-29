@@ -2,6 +2,7 @@ console.log("The shorts counter is running");
 
 let shortsCount = 0;
 let shortsWatched = new Set();
+let timer =0;
 
 const isShorts = (url) => url.includes("/shorts");
 
@@ -32,9 +33,18 @@ setInterval(() => {
   
 }, 1000); 
 
+setInterval(() => {
+  timer++;
+  console.log(timer);
+}, 1000);
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "GET_SHORTS_COUNT") {
     sendResponse({ count: shortsCount });
+  }
+});
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "GET_TIMER") {
+    sendResponse({ timer: timer });
   }
 });
