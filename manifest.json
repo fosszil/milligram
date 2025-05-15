@@ -12,6 +12,9 @@
       ]
     }
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": "extension.png"
@@ -21,9 +24,20 @@
     "webNavigation", 
     "scripting", 
     "storage", 
-    "tabs"
+    "tabs",
+    "declarativeNetRequest",
+    "notifications"
   ],
   "host_permissions": [
 
-  ]
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "blockShortsRules",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  }
 }
